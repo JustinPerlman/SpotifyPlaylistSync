@@ -53,7 +53,7 @@ FFMPEG_PATH = 'path/to/ffmpeg'  # Leave empty if FFmpeg is in system PATH
 
 ### JSON Format
 
-Use the iOS/Android app [Songshift](https://www.songshift.com/) to export a playlist from Spotify, Apple Music, etc. to JSON format. The JSON file should follow this structure:
+Use the iOS app [Songshift](https://www.songshift.com/) to export a playlist from Spotify, Apple Music, etc. to JSON format. The JSON file should follow this structure:
 
 ```json
 [
