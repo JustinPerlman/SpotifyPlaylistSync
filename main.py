@@ -6,13 +6,6 @@ import os
 JSON_FILE = 'EDM.json'
 DOWNLOAD_DIR = 'downloads'
 
-# 1. *** IMPORTANT: If you keep getting 'Encoder not found' errors, 
-# set the full path to your FFmpeg executable here. ***
-# Examples: 
-# Windows: r'C:\Program Files\ffmpeg\bin\ffmpeg.exe'
-# macOS/Linux (usually not needed if installed via package manager): '/usr/local/bin/ffmpeg'
-FFMPEG_PATH = '' # <--- REPLACE WITH YOUR PATH IF NEEDED, otherwise leave blank or remove
-
 # The command uses ytsearch1: to search YouTube and grab the first result only.
 # -x: extract audio
 # --audio-format m4a: CONVERTED FROM MP3 TO M4A TO AVOID libmp3lame ENCODER ERROR
@@ -30,11 +23,7 @@ YT_DLP_BASE_COMMAND = [
 def main():
     """Reads track data and downloads the corresponding audio from YouTube."""
     
-    # Prepend FFmpeg location if provided
     current_base_command = list(YT_DLP_BASE_COMMAND)
-    if FFMPEG_PATH:
-        current_base_command.extend(['--ffmpeg-location', FFMPEG_PATH])
-        print(f"Using explicit FFmpeg location: {FFMPEG_PATH}")
     
     # 1. Setup download directory
     if not os.path.exists(DOWNLOAD_DIR):
