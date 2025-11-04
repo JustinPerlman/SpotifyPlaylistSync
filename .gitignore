@@ -1,2 +1,4 @@
 /downlaods
 .env
+/venv
+__pycache__/
