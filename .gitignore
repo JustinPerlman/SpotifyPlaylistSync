@@ -2,6 +2,7 @@
 /downloads
 /downloads_csv
 .zip
+/csv
 
 # Ignore environment files and virtual environments
 .env
