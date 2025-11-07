@@ -46,7 +46,7 @@ If needed, set the FFmpeg path in `csvDownloader.py`:
 FFMPEG_PATH = 'path/to/ffmpeg'  # Leave empty if FFmpeg is in system PATH
 ```
 
-## CSV Format
+## Usage
 
 Use [Exportify](https://exportify.net/) to export a Spotify playlist to CSV. The CSV file should contain at minimum these columns:
 
