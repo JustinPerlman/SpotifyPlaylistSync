@@ -1,6 +1,11 @@
+# Ignore files and directories created during runtime
 /downloads
 /downloads_csv
+.zip
+
+# Ignore environment files and virtual environments
 .env
 /venv
+
+# Ignore Python cache files
 __pycache__/
-.zip
