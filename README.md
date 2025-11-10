@@ -107,7 +107,7 @@ The script provides detailed error output for:
 
 This repository includes two helper scripts that detect new songs in a playlist and feed them to the downloader:
 
-- `check_apple_music_and_run.py` — queries the macOS Music app (Apple Music) using AppleScript (`osascript`) and finds tracks that aren't in your history CSV.
+- `checkPlaylist_AppleMusic.py` — queries the macOS Music app (Apple Music) using AppleScript (`osascript`) and finds tracks that aren't in your history CSV.
 - `checkPlaylist_Spotify.py` — queries Spotify via the Web API (uses `spotipy`) and does the same for Spotify playlists.
 
 Purpose
@@ -147,4 +147,4 @@ Quick examples
 Security & git
 - OAuth tokens are cached in a small JSON cache file. The repo `.gitignore` excludes `.cache` and `.cache_spotify` by default — do not commit these files.
 
-If you want, the Spotify checker can be made to use a home-directory cache (e.g., `~/.spotify_token_cache`) instead of a repo-local file. Ask me to switch that for you.
+If you want, the Spotify checker can be made to use a home-directory cache (e.g., `~/.spotify_token_cache`) instead of a repo-local file.
