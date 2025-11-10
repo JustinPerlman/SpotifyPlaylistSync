@@ -4,25 +4,25 @@ Automatically download new tracks from your Spotify playlists. Remembers what yo
 
 ---
 
-## What It Does## What It Does
+## What It Does##
 
 **syncSpotify** connects to your Spotify playlists and downloads tracks you haven't grabbed yet. It keeps a history file for each playlist, so running it again only downloads newly added songs.**syncSpotify** connects to your Spotify playlists and downloads tracks you haven't grabbed yet. It keeps a history file for each playlist, so running it again only downloads newly added songs.
 
-**Key Features:\*\***Key Features:\*\*
+**Key Features:**
 
-- 🎵 **Auto-sync** - Only downloads new tracks since last run- 🎵 **Auto-sync** - Only downloads new tracks since last run
+- 🎵 **Auto-sync** - Only downloads new tracks since last run
 
-- 📱 **GUI & CLI** - Desktop app or command-line interface- 📱 **GUI & CLI** - Desktop app or command-line interface
+- 📱 **GUI & CLI** - Desktop app or command-line interface
 
-- 📊 **Smart tracking** - Per-playlist history in CSV files- 📊 **Smart tracking** - Per-playlist history in CSV files
+- 📊 **Smart tracking** - Per-playlist history in CSV files
 
-- 👁️ **Dry run mode** - Preview what's new without downloading- 👁️ **Dry run mode** - Preview what's new without downloading
+- 👁️ **Dry run mode** - Preview what's new without downloading
 
-- ⚡ **Real-time feedback** - Live progress for each song- ⚡ **Real-time feedback** - Live progress for each song
+- ⚡ **Real-time feedback** - Live progress for each song
 
 ---
 
-## How It Works## How It Works
+## How It Works##
 
 1. Fetches all tracks from your Spotify playlist via the Spotify API1. Fetches all tracks from your Spotify playlist via the Spotify API
 
@@ -34,9 +34,9 @@ Automatically download new tracks from your Spotify playlists. Remembers what yo
 
 ---
 
-## Installation## Installation
+## Installation##
 
-### Prerequisites### Prerequisites
+### Prerequisites###
 
 - Python 3.7+- Python 3.7+
 
@@ -46,11 +46,11 @@ Automatically download new tracks from your Spotify playlists. Remembers what yo
 
 - Spotify API credentials (free)- Spotify API credentials (free)
 
-### Setup Steps### Setup Steps
+### Setup Steps###
 
-**1. Clone the repository:\*\***1. Clone the repository:\*\*
+**1. Clone the repository:**
 
-`bash`bash
+`bash`
 
 git clone https://github.com/JustinPerlman/YoutubeAudioDownloader.gitgit clone https://github.com/JustinPerlman/YoutubeAudioDownloader.git
 
