@@ -101,11 +101,9 @@ The script provides detailed error output for:
 - Download failures
 - FFmpeg/yt-dlp command errors
 
-## License
 
-This project is open source and available under the MIT License.
 
-## Playlist checkers (Apple Music & Spotify)
+# Playlist Checkers (Apple Music & Spotify)
 
 This repository includes two helper scripts that detect new songs in a playlist and feed them to the downloader:
 
