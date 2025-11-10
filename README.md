@@ -50,47 +50,48 @@ Automatically download new tracks from your Spotify playlists. Remembers what yo
 
 **1. Clone the repository:**
 
-```git clone https://github.com/JustinPerlman/YoutubeAudioDownloader.gitgit clone https://github.com/JustinPerlman/YoutubeAudioDownloader.git
+```
+git clone https://github.com/JustinPerlman/YoutubeAudioDownloader.git
 
-cd YoutubeAudioDownloadercd YoutubeAudioDownloader
-
-````
-
-
-
-**2. Create a virtual environment:****2. Create a virtual environment:**
-
-
-
-Windows (PowerShell):Windows (PowerShell):
-
-```powershell```powershell
-
-python -m venv venvpython -m venv venv
-
-.\venv\Scripts\Activate.ps1.\venv\Scripts\Activate.ps1
+cd YoutubeAudioDownloader
 
 ````
 
-macOS/Linux:macOS/Linux:
 
-`bash`bash
 
-python3 -m venv venvpython3 -m venv venv
+**2. Create a virtual environment:**
 
-source venv/bin/activatesource venv/bin/activate
+
+
+Windows (PowerShell):
+
+```powershell
+
+python -m venv venv
+
+.\venv\Scripts\Activate.ps1
+
+````
+
+macOS/Linux:
+
+`bash
+
+python3 -m venv venv
+
+source venv/bin/activate
 
 ```````
 
 
 
-**3. Install Python dependencies:****3. Install Python dependencies:**
+**3. Install Python dependencies:**
 
 
 
-```bash```bash
+```bash
 
-pip install -r requirements.txtpip install -r requirements.txt
+pip install -r requirements.txt
 
 ```
 
@@ -138,11 +139,13 @@ SPOTIPY_REDIRECT_URI=http://127.0.0.1:8888/callback```powershell.venv\Scripts\ac
 
 ```
 
-python -m venv venvpip install --upgrade pip
+python -m venv venv
+pip install --upgrade pip
 
 ---
 
-.\venv\Scripts\Activate.ps1pip install -r requirements.txt
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 
 ## Usage
 
@@ -158,7 +161,7 @@ python sync_spotify_gui.py````bash# macOS / Linux
 
 ```
 
-python3 -m venv venvpython3 -m venv .venv
+python3 -m venv venv
 
 1. Paste your Spotify playlist URL
 
