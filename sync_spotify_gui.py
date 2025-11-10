@@ -18,7 +18,7 @@ from tkinter import ttk, filedialog, scrolledtext, messagebox
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
-SYNC_SCRIPT = SCRIPT_DIR / "syncSpotify.py"
+SYNC_SCRIPT = SCRIPT_DIR / "syncSpotifyLogon.py"
 
 
 class SyncSpotifyGUI:

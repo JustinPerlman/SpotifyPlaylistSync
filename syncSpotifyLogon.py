@@ -1,17 +1,18 @@
-"""syncSpotify.py
+"""syncSpotifyLogon.py
 ------------------
 Fetch a Spotify playlist and download only the tracks not yet present in the
 local per-playlist history CSV. History lives in `playlists/<playlist_id>.csv`.
 
 Workflow:
 1. Resolve playlist ID from URL/URI/raw ID.
-2. Fetch all tracks (paginated) via Spotipy client credentials flow.
+2. Fetch all tracks (paginated) via Spotipy user login (PKCE/OAuth).
 3. Load previously downloaded (track, artist) pairs from history.
 4. If --dry-run: list new tracks and exit.
 5. Otherwise: download each new track (via songDownloader), append to history.
 
-Environment variables (loaded from .env if present):
-    SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI (optional)
+Authentication (config file only; no .env used):
+    Reads `.spotify_app.json` containing: { "client_id": "...", "redirect_uri": "http://127.0.0.1:8888/callback" }
+    Optionally `client_secret` if PKCE unavailable and you want OAuth fallback (NOT recommended to ship secret).
 
 Caching: Uses a dedicated `.cache_spotify` file instead of Spotipy default `.cache`.
 """
@@ -19,9 +20,12 @@ Caching: Uses a dedicated `.cache_spotify` file instead of Spotipy default `.cac
 import os
 import sys
 import argparse
+import json
 from pathlib import Path
 from spotipy import Spotify
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import (
+    SpotifyOAuth,
+)  # for fallback when PKCE unavailable and secret provided
 
 try:
     # Prefer PKCE (no client secret) when available
@@ -35,7 +39,6 @@ except Exception:
 from spotipy.cache_handler import CacheFileHandler
 from songDownloader import download_song
 import csv
-from dotenv import load_dotenv
 
 TRACKING_DIR = "playlists"
 
@@ -120,6 +123,12 @@ def main():
     )
     parser.add_argument("playlist_url", help="Spotify playlist link or URI")
     parser.add_argument("download_folder", help="Folder to download songs into")
+    # No client-id argument; rely exclusively on .spotify_app.json to avoid exposing choices to end user.
+    # Provide optional --client-secret only for legacy fallback.
+    parser.add_argument(
+        "--client-secret",
+        help="Optional: Client Secret for OAuth fallback if PKCE unavailable",
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -127,20 +136,30 @@ def main():
     )
     args = parser.parse_args()
 
-    # ---- Load environment variables ----
-    load_dotenv()
-
     # ---- Configure Spotify authentication (prefer user login) ----
-    # If a client secret is present, we can use Client Credentials for public playlists
-    # but prefer user auth to support private/collaborative lists. If secret is NOT set
-    # and PKCE is available, use PKCE (requires only client_id and redirect_uri).
-    client_id = os.getenv("SPOTIPY_CLIENT_ID")
-    client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")  # optional when using PKCE
-    redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI", "http://127.0.0.1:8888/callback")
+    # Load client_id / redirect_uri from .spotify_app.json
+    config_path = Path(__file__).parent / ".spotify_app.json"
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            app_cfg = json.load(f)
+    except FileNotFoundError:
+        example = '{ "client_id": "YOUR_ID", "redirect_uri": "http://127.0.0.1:8888/callback" }'
+        print(f"ERROR: {config_path.name} not found. Create it with JSON: {example}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: Failed to read {config_path.name}: {e}")
+        sys.exit(1)
+
+    client_id = app_cfg.get("client_id")
+    redirect_uri = app_cfg.get("redirect_uri", "http://127.0.0.1:8888/callback")
+    client_secret = args.client_secret  # optional
 
     if not client_id:
+        print(f"ERROR: 'client_id' missing in {config_path.name}. Add it and re-run.")
+        sys.exit(1)
+    if not redirect_uri:
         print(
-            "ERROR: Missing SPOTIPY_CLIENT_ID. Create a Spotify app and set it in .env."
+            f"ERROR: 'redirect_uri' missing in {config_path.name}. Add it and re-run."
         )
         sys.exit(1)
 
@@ -176,18 +195,9 @@ def main():
         if not hasattr(am, "_session"):
             am._session = None  # type: ignore[attr-defined]
         sp = Spotify(auth_manager=am)
-    elif not HAS_PKCE and not client_secret:
-        # No PKCE available and no secret provided – fall back to client credentials for public playlists only
-        print(
-            "WARNING: spotipy without PKCE and no SPOTIPY_CLIENT_SECRET detected. "
-            "Falling back to client credentials (public playlists only). To enable browser login, "
-            "install a recent 'spotipy' version or provide SPOTIPY_CLIENT_SECRET."
-        )
-        sp = Spotify(auth_manager=SpotifyClientCredentials(cache_handler=cache_handler))
     else:
-        # Authorization Code flow with client secret (user login) or Client Credentials if scopes omitted
-        try:
-            # If SpotifyOAuth is importable (either via fallback above or pre-import), use it for user login
+        # If PKCE isn't available (older spotipy) but a client secret was provided, use OAuth.
+        if not HAS_PKCE and client_secret:
             sp = Spotify(
                 auth_manager=SpotifyOAuth(
                     client_id=client_id,
@@ -199,11 +209,13 @@ def main():
                     show_dialog=True,
                 )
             )
-        except NameError:
-            # If SpotifyOAuth not available for some reason, revert to client credentials
-            sp = Spotify(
-                auth_manager=SpotifyClientCredentials(cache_handler=cache_handler)
+        else:
+            # No PKCE available and no secret provided -> cannot proceed without user login capability.
+            print(
+                "ERROR: Your spotipy version lacks PKCE and no --client-secret was provided for OAuth. "
+                "Upgrade 'spotipy' to a recent version (PKCE) or re-run with --client-secret."
             )
+            sys.exit(1)
 
     # ---- Fetch playlist tracks ----
     playlist_id = get_playlist_id(args.playlist_url)

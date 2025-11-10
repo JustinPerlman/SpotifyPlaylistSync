@@ -2,7 +2,7 @@
 
 A small utility to keep a local music folder in sync with a Spotify playlist. It fetches all tracks in a playlist, compares them against a per‑playlist download history, and only downloads songs you don’t already have. Under the hood, it resolves each track to an audio source and saves it to your chosen folder. A simple GUI launcher is included.
 
-> Privacy note: This project uses Spotify’s Client Credentials flow (no user login) to read public playlist metadata. Your Spotify Client ID/Secret live in your local `.env`.
+> Auth note: This project now supports Spotify user login (Authorization Code / PKCE). First run opens a browser; tokens are cached locally in `.cache_spotify`. You can omit the client secret when using PKCE, but a Spotify Client ID is still required.
 
 ---
 
@@ -21,9 +21,9 @@ History files live in `playlists/<playlist_id>.csv` as `track,artist` rows. Down
 
 - Windows 10/11 (tested). Should also work on macOS/Linux with Python.
 - Python 3.9+
-- A Spotify Developer application (for Client ID/Secret)
+- A Spotify Developer application (Client ID required; Client Secret optional if using PKCE)
 
-Dependencies are listed in `requirements.txt` (Spotipy, python-dotenv, and the downloader dependencies).
+Dependencies are listed in `requirements.txt` (yt-dlp, spotipy, python-dotenv). A recent Spotipy version is recommended for PKCE (login without client secret).
 
 ---
 
@@ -45,18 +45,19 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-4. Create a Spotify application and get your credentials:
+4. Create a Spotify application (for user login):
 
 - Go to https://developer.spotify.com/dashboard
-- Create an app; copy the Client ID and Client Secret
-- No redirect URI is required for this app (client credentials only)
+- Create an app; copy the Client ID (Client Secret is optional with PKCE)
+- Add a redirect URI, e.g. `http://localhost:8888/callback`, in the app settings
 
 5. Create a `.env` file (or copy `.env.example`):
 
 ```ini
 SPOTIPY_CLIENT_ID=your_client_id_here
+# Optional if using PKCE; provide if using OAuth with client secret
 SPOTIPY_CLIENT_SECRET=your_client_secret_here
-# SPOTIPY_REDIRECT_URI=http://localhost:8888/callback   # optional, not required here
+SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
 ```
 
 That’s it. You’re ready to run the sync.
@@ -91,7 +92,9 @@ The script will:
 
 Notes:
 
-- A cache file `.cache_spotify` is created in the repo to store the token.
+- On first run a browser window opens to log in to Spotify; a token is cached in `.cache_spotify` and auto‑refreshed.
+- If Spotipy PKCE is available and no secret is set, PKCE is used (no client secret).
+- If neither PKCE nor a secret is available, the app falls back to public‑only Client Credentials.
 - History uses lowercase normalized comparisons for `(track, artist)`.
 
 ### GUI (optional)
@@ -118,10 +121,14 @@ You can safely delete a playlist’s CSV to force a full re‑download on the ne
 
 ## Troubleshooting
 
-- “Spotify credentials not set in environment variables”
-  - Ensure `.env` exists with `SPOTIPY_CLIENT_ID` and `SPOTIPY_CLIENT_SECRET`, then restart your shell or re‑run the script.
-- Private or unavailable playlist
-  - Client Credentials flow can only read public playlist metadata.
+- “Missing SPOTIPY_CLIENT_ID”
+  - Set `SPOTIPY_CLIENT_ID` in `.env` (you must create an app in the Spotify dashboard).
+- Browser didn’t open
+  - Copy the auth URL printed in the terminal into your browser manually.
+- Redirect URI mismatch
+  - Ensure `SPOTIPY_REDIRECT_URI` in `.env` exactly matches one of the redirect URIs configured in the Spotify dashboard.
+- Private playlist not found
+  - Make sure you logged into the right account in the consent screen; user login with scopes `playlist-read-private`/`playlist-read-collaborative` is required.
 - Nothing downloads
   - Check the `playlists/<id>.csv` file; entries there are considered already downloaded.
 - Some tracks fail to download
@@ -147,7 +154,7 @@ You can safely delete a playlist’s CSV to force a full re‑download on the ne
 ## How it works (under the hood)
 
 - Extracts a canonical playlist ID from URL/URI/raw ID
-- Uses Spotipy with Client Credentials auth to page through all tracks
+- Uses Spotipy with user login (PKCE/OAuth) to page through all tracks; can fall back to Client Credentials for public data
 - Normalizes each `(track, artist)` to lowercase for comparison
 - Compares against `playlists/<id>.csv` to find new items
 - Downloads only the new ones and appends them to the CSV
@@ -162,6 +169,8 @@ You can safely delete a playlist’s CSV to force a full re‑download on the ne
   - Delete `playlists/<id>.csv`. Next run will treat everything as new.
 - Can I change where the history lives?
   - By default it’s `playlists/`. You can move it if you also adjust the code.
+- Can I avoid creating a Spotify developer app entirely?
+  - No. Spotify’s Web API requires an application (Client ID). PKCE lets you omit the secret, but the app registration is still required.
 
 ---
 
