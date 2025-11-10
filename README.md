@@ -50,7 +50,7 @@ Automatically download new tracks from your Spotify playlists. Remembers what yo
 
 **1. Clone the repository:**
 
-`bash`
+bash```
 
 git clone https://github.com/JustinPerlman/YoutubeAudioDownloader.gitgit clone https://github.com/JustinPerlman/YoutubeAudioDownloader.git
 
