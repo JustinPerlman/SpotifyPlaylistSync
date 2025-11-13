@@ -418,9 +418,6 @@ YoutubeAudioDownloader/
 
 ## Frequently Asked Questions
 
-**Q: Can I download private playlists?**
-A: Currently only public playlists are supported. Private playlist support would require user OAuth authentication.
-
 **Q: Why are some songs not found?**
 A: The app searches YouTube for "Artist - Title". If the video isn't available or has a different name, it may fail. The script continues with other songs.
 
@@ -481,7 +478,6 @@ if success:
 ## Contributing
 
 Contributions are welcome! Areas for improvement:
-- Private playlist support (OAuth user authentication)
 - Better error handling for edge cases
 - Playlist update notifications
 - Support for other streaming services
