@@ -28,3 +28,8 @@ __pycache__/
 
 # Ignore MacOS specific files
 .DS_Store
+
+# Ignore distribution/build files
+/dist
+/build
+*.spec
