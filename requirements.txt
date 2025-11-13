@@ -1,3 +1,7 @@
 yt-dlp
 spotipy
 python-dotenv
+mutagen
+csv
+tkinter
+typing
