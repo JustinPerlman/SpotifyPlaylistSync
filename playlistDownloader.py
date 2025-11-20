@@ -137,19 +137,32 @@ def get_playlist_tracks(playlist_url):
 
 def download_from_youtube(song):
     """Download song from YouTube using songDownloader utility"""
+    # Validate song title
+    if not song['title'] or not song['title'].strip():
+        print(f"⚠️ Skipping song with empty title from artist: {song['artist']}")
+        return None
+    
     print(f"🎧 Downloading: {song['artist']} - {song['title']}")
     success = download_song(song['title'], song['artist'], DOWNLOAD_DIR)
     
     if success:
-        # songDownloader outputs as m4a with sanitized filename
+        # Create filename with artist - title format
+        safe_artist = sanitize_filename(song['artist'])
         safe_title = sanitize_filename(song['title'])
-        return os.path.join(DOWNLOAD_DIR, f"{safe_title}.m4a")
+        if not safe_title or not safe_title.strip():
+            print(f"⚠️ Sanitized title is empty for: {song['title']}")
+            return None
+        return os.path.join(DOWNLOAD_DIR, f"{safe_artist} - {safe_title}.m4a")
     return None
 
 
 def apply_metadata(m4a_path, song):
     """Apply Spotify metadata and cover art to m4a file"""
     try:
+        if not os.path.exists(m4a_path):
+            print(f"⚠️ File not found: {m4a_path}")
+            return
+        
         audio = MP4(m4a_path)
 
         # Apply text metadata using MP4 tags

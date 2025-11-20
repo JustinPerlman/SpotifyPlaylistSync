@@ -57,9 +57,10 @@ def download_song(track_name: str, artist: str, download_folder: str) -> bool:
         os.makedirs(download_folder, exist_ok=True)
     
     search_query = f"{artist} - {track_name}"
-    # Sanitize track name for filesystem
+    # Sanitize artist and track name for filesystem - use "Artist - Title" format
+    safe_artist = sanitize_filename(artist)
     safe_track_name = sanitize_filename(track_name)
-    output_template = os.path.join(download_folder, f"{safe_track_name}.%(ext)s")
+    output_template = os.path.join(download_folder, f"{safe_artist} - {safe_track_name}.%(ext)s")
     command = _build_command(search_query, output_template)
 
     try:
